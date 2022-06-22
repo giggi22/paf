@@ -1,5 +1,5 @@
 import argparse
-from datetime import datetime
+import function as fc
 
 
 def main():
@@ -8,15 +8,27 @@ def main():
     subparsers = parser.add_subparsers(
         help='possible actions', dest='subparser')
 
-    # plan initialization
-    plan = Planner()
+    # PLOT argument
+    plot_parser = subparsers.add_parser('plot', help='plot the data')
+    plot_parser.add_argument("path", help='path to data to plot', type=str, nargs=1)
+    plot_parser.add_argument("-v", "--verbose", help="Increase output verbosity", action="store_true")
 
-    # fill the plan
-    init_plan(plan)
+    # arguments are converted into an argparser.Namespace object
+    args = parser.parse_args()
 
-    # DATA TO PATH
-    _, data_path = data_to_path()
+    # MAIN IF STATEMENTS
+    # insert
+    if args.subparser == 'plot':
+        path = args.path[0] if isinstance(args.path, list) else args.path
+        print(path)
+        if args.verbose:
+            print("verbose")
+            data = fc.read_data(path)
+        else:
+            data = fc.read_data(path)
+        print(data)
 
+"""
     # INSERT argument
     insert_parser = subparsers.add_parser(
         'insert', help='Insert a new item into the planner')
@@ -137,7 +149,7 @@ def main():
 
         else:
             print("Id " + str(args.id) + " not associated with any note.")
-
+"""
 
 if __name__ == '__main__':
     main()
