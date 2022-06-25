@@ -1,21 +1,21 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from numpy import *
 from scipy.optimize import curve_fit
 from uncertainties import ufloat
 import numexpr as ne
 
 
-def read_data(path, rows_to_skip=0):
-    if path.endswith(".txt"):
-        data = np.loadtxt(path, skiprows=rows_to_skip)
-    elif path.endswith(".xlsx"):
-        data = pd.read_excel(path, header=None, skiprows=rows_to_skip).to_numpy()
-    elif path.endswith(".csv"):
-        data = np.genfromtxt(path, delimiter=";")
+def read_data(path_to_data, rows_to_skip=0):
+    # aggiungere condizione sull'esistenza del file
+    if path_to_data.endswith(".txt"):
+        data = np.loadtxt(path_to_data, skiprows=rows_to_skip)
+    elif path_to_data.endswith(".xlsx"):
+        data = pd.read_excel(path_to_data, header=None, skiprows=rows_to_skip).to_numpy()
+    elif path_to_data.endswith(".csv"):
+        data = np.genfromtxt(path_to_data, delimiter=";")
     else:
-        data = 0
+        raise NameError("Could not read this file")
 
     return data
 
@@ -36,12 +36,37 @@ def plot_data(data, x_label=" ", y_label=" "):
     plt.show()
 
 
-def fit_data(data, fitting_function, index=1, x_label=" ", y_label=" "):
+def plot_data_verbose():
+    path = input("Path to data to plot: ")
+    rows_to_skip = int(input("Number of rows to skip: "))
+    data = read_data(path, rows_to_skip)
+    x_index = int(input("Index of x data: "))
+    y_indexes = list(map(int, input("Indexes of y data: ").strip().split()))
+    x_title = input("X axis title: ")
+    y_title = input("Y axis title: ")
+
     fig, axs = plt.subplots(1)
     axs.tick_params(axis='both', labelsize=15)
 
-    x_values = data.T[0]
-    y_values = data.T[index]
+    x_values = data.T[x_index]
+    for idx in y_indexes:
+        y_values = data.T[idx]
+        axs.plot(x_values, y_values, ".", markersize=10, label="column {}".format(idx))
+
+    axs.set_xlabel(x_title, fontsize=15)
+    axs.set_ylabel(y_title, fontsize=15)
+    axs.legend(fontsize=15)
+    fig.tight_layout()
+
+    plt.show()
+
+
+def fit_data(data, fitting_function, x_index=0, y_index=1, x_label=" ", y_label=" "):
+    fig, axs = plt.subplots(1)
+    axs.tick_params(axis='both', labelsize=15)
+
+    x_values = data.T[x_index]
+    y_values = data.T[y_index]
     for idx, y_val in enumerate(data.T[1:]):
         axs.plot(x_values, y_val, ".", markersize=10, label="column {}".format(idx))
 
@@ -103,8 +128,28 @@ def generate_fitting_function(str_funct, num_var):
     return fitting_function
 
 
-data = read_data("C:\\Users\\giggi\\Desktop\\test.xlsx")
-expr = "var1*cos(x+ var3) + var2"
+def fitting_procedure():
+    path = input("Path to data to plot: ")
+    rows_to_skip = int(input("Number of rows to skip: "))
+    data = read_data(path, rows_to_skip)
+    x_index = int(input("Index of x data: "))
+    y_index = int(input("Index of y data: "))
+    num_var = int(input("Number of fitting parameters: "))
+    stringa = ""
+    for i in range(num_var):
+        stringa += " var{}".format(i)
+    print("Write the fitting function. Use" + stringa)
+    str_fitting_function = input()
+    if valid_function(str_fitting_function):
+        fitting_function = generate_fitting_function(str_fitting_function, num_var)
+        x_title = input("X axis title: ")
+        y_title = input("Y axis title: ")
+        fit_data(data, fitting_function,x_index, y_index, x_title, y_title)
+
+
+"""data = read_data("C:\\Users\\giggi\\Desktop\\test.xlsx")
+expr = "var1*cos(x+ var3) + tan(var2+1)"
 if valid_function(expr):
     f = generate_fitting_function(expr, 3)
-    fit_data(data, f)
+    fit_data(data, f)"""
+# plot_data_verbose()
