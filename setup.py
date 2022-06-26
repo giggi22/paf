@@ -1,12 +1,12 @@
 from setuptools import setup
 
 setup(
-    name='paf',
+    name='plafi',
     version='0.1.0',
-    packages=['paf'],
-    install_requires=["numpy", "pandas", "scipy", "matplotlib", "numexpr", "uncertainties"],
+    packages=['plafi'],
+    #install_requires=["numpy", "pandas", "scipy", "matplotlib", "numexpr", "uncertainties", "argparse"],
     entry_points={
         'console_scripts': [
-            'ttdplanner = ttdplanner.__main__',
+            'plafi = plafi.__main__:main',
         ]}
 )

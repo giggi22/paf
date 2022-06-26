@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 from uncertainties import ufloat
 import numexpr as ne
+import os
 
 
 def read_data(path_to_data, rows_to_skip=0):
@@ -134,22 +135,27 @@ def fitting_procedure():
     data = read_data(path, rows_to_skip)
     x_index = int(input("Index of x data: "))
     y_index = int(input("Index of y data: "))
-    num_var = int(input("Number of fitting parameters: "))
+    num_var = int(input("Number of fitting parameters (max 5): "))
     stringa = ""
     for i in range(num_var):
-        stringa += " var{}".format(i)
-    print("Write the fitting function. Use" + stringa)
+        stringa += " var{}".format(i+1)
+    print("Write the fitting function. Use" + stringa + " as fitting parameters.")
     str_fitting_function = input()
     if valid_function(str_fitting_function):
         fitting_function = generate_fitting_function(str_fitting_function, num_var)
         x_title = input("X axis title: ")
         y_title = input("Y axis title: ")
-        fit_data(data, fitting_function,x_index, y_index, x_title, y_title)
+        fit_data(data, fitting_function, x_index, y_index, x_title, y_title)
 
 
-"""data = read_data("C:\\Users\\giggi\\Desktop\\test.xlsx")
-expr = "var1*cos(x+ var3) + tan(var2+1)"
-if valid_function(expr):
-    f = generate_fitting_function(expr, 3)
-    fit_data(data, f)"""
-# plot_data_verbose()
+def initialize_constants():
+    constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "plafi_constants.csv")
+    if not os.path.exists(constants_file_path):
+        print("Created plafi_constants.csv")
+        void_dataframe = pd.DataFrame(columns=["name", "value"])
+        void_dataframe.to_csv(constants_file_path, index=False, sep=";")
+    else:
+        if os.stat(constants_file_path).st_size != 0:
+            print("file c'è")
+            constants = pd.read_csv(constants_file_path, index_col=False)
+            print(constants)

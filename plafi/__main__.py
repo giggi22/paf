@@ -1,5 +1,5 @@
 import argparse
-import function as fc
+from . import functions as fc
 
 
 def main():
