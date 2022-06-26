@@ -16,6 +16,11 @@ def main():
     # FIT argument
     fit_parser = subparsers.add_parser('fit', help='fit the data')
 
+    # CONSTANTS argument
+    constants_parser = subparsers.add_parser('const', help='manage the constants')
+    constants_parser.add_argument("-a", "--add", help="add a new constant", action="store_true")
+    constants_parser.add_argument("-d", "--delete", help="delete a constant", action="store_true")
+
     # arguments are converted into an argparser.Namespace object
     args = parser.parse_args()
 
@@ -33,6 +38,14 @@ def main():
     if args.subparser == 'fit':
         fc.fitting_procedure()
 
+    # const case
+    if args.subparser == 'const':
+        fc.initialize_constants()
+        if args.add:
+            fc.add_constant()
+        if args.delete:
+            fc.delete_constant()
+        fc.print_constants()
 
 if __name__ == '__main__':
     main()

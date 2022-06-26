@@ -6,5 +6,4 @@ dic = dict(zip(data.T[0], data.T[1]))
 
 for key in dic.keys():
     if key not in globals():
-        print("aggiunto ", key)
         globals()[key] = dic[key]

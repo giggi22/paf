@@ -5,6 +5,7 @@ from scipy.optimize import curve_fit
 from uncertainties import ufloat
 import numexpr as ne
 import os
+from tabulate import tabulate
 
 
 def read_data(path_to_data, rows_to_skip=0):
@@ -87,9 +88,14 @@ def fit_data(data, fitting_function, x_index=0, y_index=1, x_label=" ", y_label=
 
 
 def valid_function(str_funct):
+    constants = read_constants().to_numpy()
+    dic = dict(zip(constants.T[0], constants.T[1]))
+
     ALLOWED_NAMES = {
                         k: v for k, v in np.__dict__.items() if not k.startswith("__")
-                    } | {"x": "x", "var1": "var1", "var2": "var2", "var3": "var3", "var4": "var4", "var5": "var5"}
+                    } | {
+                        "x": "x", "var1": "var1", "var2": "var2", "var3": "var3", "var4": "var4", "var5": "var5"
+                    } | dic
 
     """Evaluate a math expression."""
     # Compile the expression
@@ -107,6 +113,7 @@ def valid_function(str_funct):
 
 
 def generate_fitting_function(str_funct, num_var):
+    constants_to_globals()
     match num_var:
         case 1:
             def fitting_function(x, var1):
@@ -135,12 +142,14 @@ def fitting_procedure():
     data = read_data(path, rows_to_skip)
     x_index = int(input("Index of x data: "))
     y_index = int(input("Index of y data: "))
+
     num_var = int(input("Number of fitting parameters (max 5): "))
     stringa = ""
     for i in range(num_var):
-        stringa += " var{}".format(i+1)
+        stringa += " var{}".format(i + 1)
     print("Write the fitting function. Use" + stringa + " as fitting parameters.")
     str_fitting_function = input()
+
     if valid_function(str_fitting_function):
         fitting_function = generate_fitting_function(str_fitting_function, num_var)
         x_title = input("X axis title: ")
@@ -154,8 +163,55 @@ def initialize_constants():
         print("Created plafi_constants.csv")
         void_dataframe = pd.DataFrame(columns=["name", "value"])
         void_dataframe.to_csv(constants_file_path, index=False, sep=";")
+
+
+def read_constants():
+    constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "plafi_constants.csv")
+    constants = pd.read_csv(constants_file_path, index_col=False, sep=";")
+
+    return constants
+
+
+def constants_to_globals():
+    constants = read_constants().to_numpy()
+
+    dic = dict(zip(constants.T[0], constants.T[1]))
+
+    for key in dic.keys():
+        if key not in globals():
+            globals()[key] = dic[key]
+
+
+def print_constants():
+    constants = read_constants()
+
+    # table creation
+    table = tabulate(constants, headers=[str(constants.columns[0]), str(constants.columns[1])],
+                     tablefmt="fancy_grid", showindex=False)
+
+    # printing the plan in the table
+    print(table)
+
+
+def add_constant():
+    constants = read_constants().to_numpy()
+    name = input("New constant name: ")
+    value = float(input("New constant value: "))
+    if name in constants.T[0]:
+        raise NameError("This name is already used")
     else:
-        if os.stat(constants_file_path).st_size != 0:
-            print("file c'è")
-            constants = pd.read_csv(constants_file_path, index_col=False)
-            print(constants)
+        constants = np.vstack([constants, [name, value]])
+        constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "plafi_constants.csv")
+        pd.DataFrame(constants, columns=["name", "value"]).to_csv(constants_file_path, index=False, sep=";")
+
+
+def delete_constant():
+    constants = read_constants()
+    name = input("Constant name to delete: ")
+    print(constants["name"])
+    if not np.any(constants["name"].str.contains(name)):
+        raise NameError("This name does not exist")
+    else:
+        constants = constants[constants["name"].str.contains(name) == False]
+        constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "plafi_constants.csv")
+        constants.to_csv(constants_file_path, index=False, sep=";")
