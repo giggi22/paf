@@ -3,7 +3,7 @@ from contextlib import contextmanager
 
 @contextmanager
 def highlighted_text():
-    print('\033[2;31;43m', end='')
+    print('\033[0;36m', end='')
     try:
         yield
     finally:

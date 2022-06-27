@@ -1,6 +1,7 @@
 import argparse
 from . import functions as fc
 
+# TODO per testing controllare che le costanti vengano create/lette/eliminate correttamente
 
 def main():
     # parser initialization
@@ -46,6 +47,7 @@ def main():
         if args.delete:
             fc.delete_constant()
         fc.print_constants()
+
 
 if __name__ == '__main__':
     main()

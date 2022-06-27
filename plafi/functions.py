@@ -6,7 +6,11 @@ from uncertainties import ufloat
 import numexpr as ne
 import os
 from tabulate import tabulate
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import graphics
 
+# TODO togliere traceback quando escono degli errori
 
 def read_data(path_to_data, rows_to_skip=0):
     # aggiungere condizione sull'esistenza del file
@@ -147,7 +151,10 @@ def fitting_procedure():
     stringa = ""
     for i in range(num_var):
         stringa += " var{}".format(i + 1)
-    print("Write the fitting function. Use" + stringa + " as fitting parameters.")
+    print("Write the fitting function. Use", end='')
+    with graphics.highlighted_text():
+        print(stringa, end='')
+    print( " as fitting parameters.")
     str_fitting_function = input()
 
     if valid_function(str_fitting_function):
