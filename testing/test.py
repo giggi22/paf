@@ -121,8 +121,10 @@ def test_generate_fitting_function():
     func3 = fc.generate_fitting_function("var1*sin(x)+var3", 3)
     func4 = fc.generate_fitting_function("var1*sin(x)+var4", 4)
     func5 = fc.generate_fitting_function("var1*sin(x)+var5", 5)
-    assert isinstance(func2, types.FunctionType)
+    assert func5(0, 0, 0, 0, 0, 0) == func4(0, 0, 0, 0, 0)
+    assert func3(0, 0, 0, 0) == func2(0, 0, 0)
     assert isinstance(func1, types.FunctionType)
+    assert isinstance(func2, types.FunctionType)
     assert isinstance(func3, types.FunctionType)
     assert isinstance(func4, types.FunctionType)
     assert isinstance(func5, types.FunctionType)
@@ -133,11 +135,10 @@ def test_generate_fitting_function():
 def test_fit_data(monkeypatch):
     monkeypatch.setattr(plt, 'show', lambda: None)
     data = fc.read_data("data2.xlsx", rows_to_skip=0)
-    fit_func = fc.generate_fitting_function("var1*cos(x+var2)", 2)
+    fit_func = fc.generate_fitting_function("var1*sin(x)", 1)
     x_title, y_title = "title1", "title2"
     popt, perr, fig = fc.fit_data(data, fit_func, x_label=x_title, y_label=y_title)
-    assert abs(abs(popt[0]) - 1) < 0.001
-    assert abs(abs(popt[1]) - np.pi/2) < 0.001
+    assert abs(popt - 1) < 0.001
     assert fig.axes[0].xaxis.label._text == x_title
     assert fig.axes[0].yaxis.label._text == y_title
 
@@ -170,3 +171,8 @@ def test_plot_data_verbose(monkeypatch):
     fig = fc.plot_data_verbose()
     assert fig.axes[0].xaxis.label._text == x_title
     assert fig.axes[0].yaxis.label._text == y_title
+
+
+def test_print_constants():
+    table = fc.print_constants()
+    assert isinstance(table, str)

@@ -186,6 +186,7 @@ def print_constants():
 
     # printing the plan in the table
     print(table)
+    return table
 
 
 def add_constant():
