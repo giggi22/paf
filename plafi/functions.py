@@ -7,14 +7,37 @@ import numexpr as ne
 import os
 from tabulate import tabulate
 import sys
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import graphics
 
-# TODO togliere traceback quando escono degli errori
 
+def read_data(
+        path_to_data: str,
+        rows_to_skip: int = 0
+) -> np.ndarray:
+    """
+    Parameters
+    ----------
+    path_to_data (str): path to datafile
+    rows_to_skip (int): number of rows to skip when the datafile is read
 
-def read_data(path_to_data, rows_to_skip=0):
-    # aggiungere condizione sull'esistenza del file
+    Returns
+    -------
+    data (np.ndarray): matrix with the data
+
+    Notes
+    -----
+    This function read <path_to_data> and returns the data contained in it.
+    It skips the first <rows_to_skip> rows.
+    The function can read .txt, .xlsx and .csv (with ";" as separator) files.
+
+    Warnings
+    --------
+    This function must be updated everytime the columns of the plan are changed
+    """
+
+    # reading data in <path_to_data> depending on its extension (.txt, .xlsx or .csv)
     if path_to_data.endswith(".txt"):
         data = np.loadtxt(path_to_data, skiprows=rows_to_skip)
     elif path_to_data.endswith(".xlsx"):
@@ -22,8 +45,8 @@ def read_data(path_to_data, rows_to_skip=0):
     elif path_to_data.endswith(".csv"):
         data = np.genfromtxt(path_to_data, delimiter=";")
     else:
+        # an error is raised if the extension is not between the one that can be read
         raise NameError("Could not read this file")
-
     return data
 
 
@@ -53,7 +76,7 @@ def plot_data_verbose():
     x_title = input("X axis title: ")
     y_title = input("Y axis title: ")
 
-    data_indexes = [x_index]+y_indexes
+    data_indexes = [x_index] + y_indexes
     data_to_plot = data.T[data_indexes].T
     return plot_data(data_to_plot, x_title, y_title)
 
@@ -142,7 +165,7 @@ def fitting_procedure():
     for i in range(num_var):
         stringa += " var{}".format(i + 1)
     print("Write the fitting function. Use", end='')
-    with graphics.highlighted_text():
+    with graphics.highlighted_cyan_text():
         print(stringa, end='')
     print(" as fitting parameters.")
     str_fitting_function = input(">>>")

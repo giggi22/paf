@@ -1,7 +1,8 @@
 import argparse
 from . import functions as fc
-
-# TODO per testing controllare che le costanti vengano create/lette/eliminate correttamente
+import os
+import sys
+sys.tracebacklimit = 0
 
 def main():
     # parser initialization
@@ -28,15 +29,20 @@ def main():
     # MAIN IF STATEMENTS
     # plot case
     if args.subparser == 'plot':
-        path = args.path[0] if isinstance(args.path, list) else args.path
+        path = args.path
         if args.verbose:
             fc.plot_data_verbose()
         else:
             if path == None:
-                print("Path is missing")
+                raise ValueError("A path must be passed")
+            elif not os.path.exists(path):
+                raise ValueError("The file does not exist")
             else:
-                data = fc.read_data(path)
-                fc.plot_data(data)
+                try:
+                    data = fc.read_data(path)
+                    fc.plot_data(data)
+                except:
+                    raise ValueError("It was not possible to read the file")
 
     # fit case
     if args.subparser == 'fit':

@@ -169,7 +169,7 @@ def test_plot_data_verbose(monkeypatch):
     monkeypatch.setattr('builtins.input', lambda path: next(answers))
 
     fig = fc.plot_data_verbose()
-    assert fig.axes[0].xaxis.label._text == x_title
+    assert fig.axes[0].xaxis.label._text == y_title
     assert fig.axes[0].yaxis.label._text == y_title
 
 
