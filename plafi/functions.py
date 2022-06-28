@@ -12,6 +12,7 @@ import graphics
 
 # TODO togliere traceback quando escono degli errori
 
+
 def read_data(path_to_data, rows_to_skip=0):
     # aggiungere condizione sull'esistenza del file
     if path_to_data.endswith(".txt"):
@@ -40,6 +41,7 @@ def plot_data(data, x_label=" ", y_label=" "):
     fig.tight_layout()
 
     plt.show()
+    return fig
 
 
 def plot_data_verbose():
@@ -51,44 +53,32 @@ def plot_data_verbose():
     x_title = input("X axis title: ")
     y_title = input("Y axis title: ")
 
-    fig, axs = plt.subplots(1)
-    axs.tick_params(axis='both', labelsize=15)
-
-    x_values = data.T[x_index]
-    for idx in y_indexes:
-        y_values = data.T[idx]
-        axs.plot(x_values, y_values, ".", markersize=10, label="column {}".format(idx))
-
-    axs.set_xlabel(x_title, fontsize=15)
-    axs.set_ylabel(y_title, fontsize=15)
-    axs.legend(fontsize=15)
-    fig.tight_layout()
-
-    plt.show()
+    data_indexes = [x_index]+y_indexes
+    data_to_plot = data.T[data_indexes].T
+    return plot_data(data_to_plot, x_title, y_title)
 
 
 def fit_data(data, fitting_function, x_index=0, y_index=1, x_label=" ", y_label=" "):
-    fig, axs = plt.subplots(1)
-    axs.tick_params(axis='both', labelsize=15)
-
     x_values = data.T[x_index]
     y_values = data.T[y_index]
-    for idx, y_val in enumerate(data.T[1:]):
-        axs.plot(x_values, y_val, ".", markersize=10, label="column {}".format(idx))
 
     popt, pcov = curve_fit(fitting_function, x_values, y_values)
     perr = np.sqrt(np.diag(pcov))
-    axs.plot(x_values, fitting_function(x_values, *popt), "--", linewidth=2.1, label="fit")
 
     for idx, par in enumerate(popt):
-        print("parameter {}: ".format(idx), ufloat(par, perr[idx]))
+        print("parameter {}: ".format(idx + 1), ufloat(par, perr[idx]))
 
+    fig, axs = plt.subplots(1)
+    axs.tick_params(axis='both', labelsize=15)
+    axs.plot(x_values, y_values, ".", markersize=10, label="data (col {})".format(y_index))
+    axs.plot(x_values, fitting_function(x_values, *popt), "--", linewidth=2.1, label="fit")
     axs.set_xlabel(x_label, fontsize=15)
     axs.set_ylabel(y_label, fontsize=15)
     axs.legend(fontsize=15)
     fig.tight_layout()
 
     plt.show()
+    return popt, perr, fig
 
 
 def valid_function(str_funct):
@@ -146,22 +136,22 @@ def fitting_procedure():
     data = read_data(path, rows_to_skip)
     x_index = int(input("Index of x data: "))
     y_index = int(input("Index of y data: "))
-
     num_var = int(input("Number of fitting parameters (max 5): "))
+
     stringa = ""
     for i in range(num_var):
         stringa += " var{}".format(i + 1)
     print("Write the fitting function. Use", end='')
     with graphics.highlighted_text():
         print(stringa, end='')
-    print( " as fitting parameters.")
-    str_fitting_function = input()
+    print(" as fitting parameters.")
+    str_fitting_function = input(">>>")
 
     if valid_function(str_fitting_function):
         fitting_function = generate_fitting_function(str_fitting_function, num_var)
         x_title = input("X axis title: ")
         y_title = input("Y axis title: ")
-        fit_data(data, fitting_function, x_index, y_index, x_title, y_title)
+        return fit_data(data, fitting_function, x_index, y_index, x_title, y_title)
 
 
 def initialize_constants():

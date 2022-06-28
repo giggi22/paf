@@ -11,7 +11,7 @@ def main():
 
     # PLOT argument
     plot_parser = subparsers.add_parser('plot', help='plot the data')
-    plot_parser.add_argument("path", help='path to data to plot', type=str, nargs=1)
+    plot_parser.add_argument("path", help='path to data to plot', type=str, nargs="?")
     plot_parser.add_argument("-v", "--verbose", help="Increase output verbosity", action="store_true")
 
     # FIT argument
@@ -32,8 +32,11 @@ def main():
         if args.verbose:
             fc.plot_data_verbose()
         else:
-            data = fc.read_data(path)
-            fc.plot_data(data)
+            if path == None:
+                print("Path is missing")
+            else:
+                data = fc.read_data(path)
+                fc.plot_data(data)
 
     # fit case
     if args.subparser == 'fit':
