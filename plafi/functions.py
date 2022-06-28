@@ -167,9 +167,7 @@ def fitting_procedure():
 def initialize_constants():
     constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "plafi_constants.csv")
     if not os.path.exists(constants_file_path):
-        print("Created plafi_constants.csv")
-        void_dataframe = pd.DataFrame(columns=["name", "value"])
-        void_dataframe.to_csv(constants_file_path, index=False, sep=";")
+        save_constants(None)
 
 
 def read_constants():
@@ -208,8 +206,12 @@ def add_constant():
         raise NameError("This name is already used")
     else:
         constants = np.vstack([constants, [name, value]])
-        constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "plafi_constants.csv")
-        pd.DataFrame(constants, columns=["name", "value"]).to_csv(constants_file_path, index=False, sep=";")
+        save_constants(constants)
+
+
+def save_constants(constants):
+    constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "plafi_constants.csv")
+    pd.DataFrame(constants, columns=["name", "value"]).to_csv(constants_file_path, index=False, sep=";")
 
 
 def delete_constant():
