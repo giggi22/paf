@@ -1,3 +1,6 @@
+import types
+
+import matplotlib.figure
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -16,6 +19,7 @@ def read_data(
         path_to_data: str,
         rows_to_skip: int = 0
 ) -> np.ndarray:
+
     """
     Parameters
     ----------
@@ -31,10 +35,6 @@ def read_data(
     This function read <path_to_data> and returns the data contained in it.
     It skips the first <rows_to_skip> rows.
     The function can read .txt, .xlsx and .csv (with ";" as separator) files.
-
-    Warnings
-    --------
-    This function must be updated everytime the columns of the plan are changed
     """
 
     # reading data in <path_to_data> depending on its extension (.txt, .xlsx or .csv)
@@ -50,10 +50,33 @@ def read_data(
     return data
 
 
-def plot_data(data, x_label=" ", y_label=" "):
+def plot_data(
+        data: np.ndarray,
+        x_label: str = " ",
+        y_label: str = " "
+) -> matplotlib.figure.Figure:
+
+    """
+    Parameters
+    ----------
+    data (np.ndarray): matrix with the data
+    x_label (str): label for the x-axis of the plot
+    y_label (str): label for the y-axis of the plot
+
+    Returns
+    -------
+    fig (matplotlib.figure.Figure): figure containing the plot
+
+    Notes
+    -----
+    This function plot <data>.
+    The chart x-axis and y-axis labels are set as <x_label> and <y_label>.
+    """
+
     fig, axs = plt.subplots(1)
     axs.tick_params(axis='both', labelsize=15)
 
+    # The x values are given by the first column of <data>, all the other columns are plot as function of x
     x_values = data.T[0]
     for idx, y_values in enumerate(data.T[1:]):
         axs.plot(x_values, y_values, ".", markersize=10, label="column {}".format(idx))
@@ -67,30 +90,86 @@ def plot_data(data, x_label=" ", y_label=" "):
     return fig
 
 
-def plot_data_verbose():
+def plot_data_verbose(
+
+) -> matplotlib.figure.Figure:
+
+    """
+    Returns
+    -------
+    fig (matplotlib.figure.Figure): figure containing the plot
+
+    Notes
+    -----
+    This function plot some data whose path is requested to the user.
+    Other parameters are requested: number of rows to skip, index of x values,
+    index of y values and labels of the chart axis.
+    """
+
     path = input("Path to data to plot: ")
+    # raise an error if the file does not exist
+    if not os.path.exists(path):
+        raise ValueError("The file does not exist")
     rows_to_skip = int(input("Number of rows to skip: "))
     data = read_data(path, rows_to_skip)
     x_index = int(input("Index of x data: "))
+    # selecting the columns to plot
     y_indexes = list(map(int, input("Indexes of y data: ").strip().split()))
     x_title = input("X axis title: ")
     y_title = input("Y axis title: ")
 
+    # creating a np.ndarray with only the data to plot
     data_indexes = [x_index] + y_indexes
     data_to_plot = data.T[data_indexes].T
+
     return plot_data(data_to_plot, x_title, y_title)
 
 
-def fit_data(data, fitting_function, x_index=0, y_index=1, x_label=" ", y_label=" "):
+def fit_data(
+        data: np.ndarray,
+        fitting_function: types.FunctionType,
+        x_index: int = 0,
+        y_index: int = 1,
+        x_label: str = " ",
+        y_label: str = " "
+) -> [np.ndarray, np.ndarray, matplotlib.figure.Figure]:
+
+    """
+    Parameters
+    ----------
+    data (np.ndarray): matrix with all the data
+    fitting_function (types.FunctionType): function to be used for the fit
+    x_index (int): index of x values
+    y_index (int): index of y values
+    x_label (str): label for the x-axis of the plot
+    y_label (str): label for the y-axis of the plot
+
+    Returns
+    -------
+    popt (np.ndarray): values of the fitting parameters
+    perr (np.ndarray): standard deviations of the fitting parameters
+    fig (matplotlib.figure.Figure): figure containing the plot
+
+    Notes
+    -----
+    This function fit a set of values in <data>, using <fitting_function> as fitting function and plot both of them.
+    The values are selected using <x_index> and <y_index>.
+    <x_label> and <y_label> are the labels of the chart axis.
+    """
+
+    # extracting the value for the fit
     x_values = data.T[x_index]
     y_values = data.T[y_index]
 
+    # fitting procedure
     popt, pcov = curve_fit(fitting_function, x_values, y_values)
     perr = np.sqrt(np.diag(pcov))
 
+    # printing the fitting parameters
     for idx, par in enumerate(popt):
         print("parameter {}: ".format(idx + 1), ufloat(par, perr[idx]))
 
+    # plotting the data and the fitting curve
     fig, axs = plt.subplots(1)
     axs.tick_params(axis='both', labelsize=15)
     axs.plot(x_values, y_values, ".", markersize=10, label="data (col {})".format(y_index))
@@ -104,23 +183,43 @@ def fit_data(data, fitting_function, x_index=0, y_index=1, x_label=" ", y_label=
     return popt, perr, fig
 
 
-def valid_function(str_funct):
+def valid_function(
+        str_funct: str  # fitting function written as string
+) -> bool:  # True: the function is cn be used; False: the function can not be used
+
+    """
+    Parameters
+    ----------
+    str_funct (str): fitting function written as string
+
+    Returns
+    -------
+    valid (bool): True if the function can be used, False otherwise
+
+    Notes
+    -----
+    This function check if <str_funct> can be used as fitting function.
+    The function is valid if contains mathematical operation that are included in the numpy module.
+    Moreover, it can contain x as variable, and some parameter (var1 -> var5).
+    """
+
+    # creating a dictionary with all the constants
     constants = read_constants().to_numpy()
     dic = dict(zip(constants.T[0], constants.T[1]))
 
+    # dictionary with all the allowed simbols/operations
     ALLOWED_NAMES = {
                         k: v for k, v in np.__dict__.items() if not k.startswith("__")
                     } | {
                         "x": "x", "var1": "var1", "var2": "var2", "var3": "var3", "var4": "var4", "var5": "var5"
                     } | dic
 
-    """Evaluate a math expression."""
     # Compile the expression
     code = compile(str_funct, "<string>", "eval")
 
     valid = True
 
-    # Validate allowed names
+    # Check for not allowed names
     for name in code.co_names:
         if name not in ALLOWED_NAMES and valid:
             print("{} can not be used".format(name))
