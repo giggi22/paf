@@ -149,7 +149,8 @@ def test_fitting_procedure(monkeypatch):
     path, rows_to_skip, x_index, y_index = "data2.xlsx", str(0), str(0), str(1)
     num_par, fit_func = str(2), "var1*cos(x+var2)"
     x_title, y_title = "a random title", "a second random title"
-    answers = iter([path, rows_to_skip, x_index, y_index, num_par, fit_func, x_title, y_title])
+    wrong_path = "file_does_not_exist.txt"
+    answers = iter([path, rows_to_skip, x_index, y_index, num_par, fit_func, x_title, y_title, wrong_path])
     monkeypatch.setattr('builtins.input', lambda path: next(answers))
 
     popt, perr, fig = fc.fitting_procedure()
@@ -158,7 +159,8 @@ def test_fitting_procedure(monkeypatch):
     assert abs(abs(popt[1]) - np.pi / 2) < 0.001
     assert fig.axes[0].xaxis.label._text == x_title
     assert fig.axes[0].yaxis.label._text == y_title
-
+    with pytest.raises(NameError):
+        fc.fitting_procedure()
 
 def test_plot_data_verbose(monkeypatch):
     monkeypatch.setattr(plt, 'show', lambda: None)

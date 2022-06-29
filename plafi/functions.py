@@ -1,5 +1,4 @@
 import types
-
 import matplotlib.figure
 import numpy as np
 import pandas as pd
@@ -233,8 +232,38 @@ def valid_function(
     return valid
 
 
-def generate_fitting_function(str_funct, num_var):
+def generate_fitting_function(
+        str_funct: str,  # fitting function written as string
+        num_var: int  # number of fitting parameters
+) -> types.FunctionType:
+
+    """
+    Parameters
+    ----------
+    str_funct (str): fitting function written as string
+    num_var (int): number of fitting parameters
+
+    Returns
+    -------
+    fitting_function (types.FunctionType): fitting function
+
+    Notes
+    -----
+    Given a string with written the fitting function,this function returns a usable fitting function.
+
+    Warnings
+    --------
+    This function does include "e" and "pi", but they will be overwritten if the user put them in the constants file.
+    """
+
+    # "pi" and "e" are added to globals() in order to be consistent with the output of valid_function()
+    globals()["pi"] = np.pi
+    globals()["e"] = np.e
+
+    # reading the constants and adding them to globals()
     constants_to_globals()
+
+    # creating the fitting function depending on the number of fitting parameters
     match num_var:
         case 1:
             def fitting_function(x, var1):
@@ -257,23 +286,45 @@ def generate_fitting_function(str_funct, num_var):
     return fitting_function
 
 
-def fitting_procedure():
+def fitting_procedure(
+
+) -> [np.ndarray, np.ndarray, matplotlib.figure.Figure]:
+
+    """
+    Returns
+    -------
+    popt (np.ndarray): values of the fitting parameters
+    perr (np.ndarray): standard deviations of the fitting parameters
+    fig (matplotlib.figure.Figure): figure containing the plot
+
+    Notes
+    -----
+    This function will ask the user some parameters in order to perform a fit: path, number of rows to
+    skip, indexes of x-values and y-values, number of parameter, fitting function and labels of chart axis.
+    """
+
+    # asking the user for all the parameters
     path = input("Path to data to plot: ")
+    # raise an error if the file does not exist
+    if not os.path.exists(path):
+        raise NameError("The file does not exist")
     rows_to_skip = int(input("Number of rows to skip: "))
     data = read_data(path, rows_to_skip)
     x_index = int(input("Index of x data: "))
     y_index = int(input("Index of y data: "))
     num_var = int(input("Number of fitting parameters (max 5): "))
 
-    stringa = ""
+    colored_variables = ""
     for i in range(num_var):
-        stringa += " var{}".format(i + 1)
+        colored_variables += " var{}".format(i + 1)
     print("Write the fitting function. Use", end='')
     with graphics.highlighted_cyan_text():
-        print(stringa, end='')
-    print(" as fitting parameters.")
-    str_fitting_function = input(">>>")
+        print(colored_variables, end='')
 
+    print(" as fitting parameters.")
+    str_fitting_function = input(">>> ")
+
+    # if the function is valid, the fit will be performed
     if valid_function(str_fitting_function):
         fitting_function = generate_fitting_function(str_fitting_function, num_var)
         x_title = input("X axis title: ")
@@ -281,22 +332,53 @@ def fitting_procedure():
         return fit_data(data, fitting_function, x_index, y_index, x_title, y_title)
 
 
-def initialize_constants():
+def initialize_constants(
+
+):
+
+    """
+    Notes
+    -----
+    This function will initialize the file that contains the constants if it does not exist.
+    """
+
     constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "plafi_constants.csv")
     if not os.path.exists(constants_file_path):
         save_constants(None)
 
 
-def read_constants():
+def read_constants(
+
+) -> pd.DataFrame:
+
+    """
+    Returns
+    -------
+    constants (pd.DataFrame): DataFrame with all the constants
+
+    Notes
+    -----
+    This function will read the file containing the constants and will return a DataFrame with them.
+    """
+
     constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "plafi_constants.csv")
     constants = pd.read_csv(constants_file_path, index_col=False, sep=";")
 
     return constants
 
 
-def constants_to_globals():
-    constants = read_constants().to_numpy()
+def constants_to_globals(
 
+):
+
+    """
+    Notes
+    -----
+    This function will read the file containing the constants and will put them in globals().
+    It is used to create custom variable that can be used to define dynamically new functions.
+    """
+
+    constants = read_constants().to_numpy()
     dic = dict(zip(constants.T[0], constants.T[1]))
 
     for key in dic.keys():
@@ -304,7 +386,21 @@ def constants_to_globals():
             globals()[key] = dic[key]
 
 
-def print_constants():
+def print_constants(
+
+) -> str:
+
+    """
+    Returns
+    -------
+    table (str): table that contain all the current constants
+
+    Notes
+    -----
+    This function will read the file containing the constants and creates a table.
+    The table will be returned and printed.
+    """
+
     constants = read_constants()
 
     # table creation
@@ -316,7 +412,17 @@ def print_constants():
     return table
 
 
-def add_constant():
+def add_constant(
+
+):
+
+    """
+    Notes
+    -----
+    This function will ask the user a name and a value for a new constant.
+    If the constant name is not currently used, it will be saved in the constants file.
+    """
+
     constants = read_constants().to_numpy()
     name = input("New constant name: ")
     value = float(input("New constant value: "))
@@ -327,12 +433,35 @@ def add_constant():
         save_constants(constants)
 
 
-def save_constants(constants):
+def save_constants(
+        constants: np.ndarray  # np.ndarray containing all the constants
+):
+
+    """
+    Parameters
+    -------
+    constants (np.ndarray): np.ndarray containing all the constants
+
+    Notes
+    -----
+    Given <constants> it will save them in a .csv file.
+    """
+
     constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "plafi_constants.csv")
     pd.DataFrame(constants, columns=["name", "value"]).to_csv(constants_file_path, index=False, sep=";")
 
 
-def delete_constant():
+def delete_constant(
+
+):
+
+    """
+    Notes
+    -----
+    This function will ask the user the name of a constants, and if it does
+    exist, it will be deleted from the constants file.
+    """
+
     constants = read_constants()
     name = input("Constant name to delete: ")
     print(constants["name"])
