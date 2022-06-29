@@ -109,7 +109,7 @@ def plot_data_verbose(
     path = input("Path to data to plot: ")
     # raise an error if the file does not exist
     if not os.path.exists(path):
-        raise ValueError("The file does not exist")
+        raise NameError("The file does not exist")
     rows_to_skip = int(input("Number of rows to skip: "))
     data = read_data(path, rows_to_skip)
     x_index = int(input("Index of x data: "))
@@ -201,6 +201,11 @@ def valid_function(
     This function check if <str_funct> can be used as fitting function.
     The function is valid if contains mathematical operation that are included in the numpy module.
     Moreover, it can contain x as variable, and some parameter (var1 -> var5).
+
+    Warnings
+    --------
+    This function will accept symbols as "pi" or "e" because they are
+    included in numpy, even though they are not included in the constants file.
     """
 
     # creating a dictionary with all the constants

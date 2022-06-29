@@ -165,12 +165,15 @@ def test_plot_data_verbose(monkeypatch):
 
     path, rows_to_skip, x_index, y_index = "data1.csv", str(0), str(0), str(1)
     x_title, y_title = "a random title", "a second random title"
-    answers = iter([path, rows_to_skip, x_index, y_index, x_title, y_title])
+    wrong_path = "file_does_not_exist.txt"
+    answers = iter([path, rows_to_skip, x_index, y_index, x_title, y_title, wrong_path])
     monkeypatch.setattr('builtins.input', lambda path: next(answers))
 
     fig = fc.plot_data_verbose()
-    assert fig.axes[0].xaxis.label._text == y_title
+    assert fig.axes[0].xaxis.label._text == x_title
     assert fig.axes[0].yaxis.label._text == y_title
+    with pytest.raises(NameError):
+        fc.plot_data_verbose()
 
 
 def test_print_constants():
