@@ -264,24 +264,28 @@ def generate_fitting_function(
     constants_to_globals()
 
     # creating the fitting function depending on the number of fitting parameters
-    match num_var:
-        case 1:
-            def fitting_function(x, var1):
-                return ne.evaluate(str_funct)
-        case 2:
-            def fitting_function(x, var1, var2):
-                return ne.evaluate(str_funct)
-        case 3:
-            def fitting_function(x, var1, var2, var3):
-                return ne.evaluate(str_funct)
-        case 4:
-            def fitting_function(x, var1, var2, var3, var4):
-                return ne.evaluate(str_funct)
-        case 5:
-            def fitting_function(x, var1, var2, var3, var4, var5):
-                return ne.evaluate(str_funct)
-        case _:
-            raise NameError("The number of parameters must range from 1 to 5")
+    if num_var == 1:
+        def fitting_function(x, var1):
+            return ne.evaluate(str_funct)
+
+    elif num_var == 2:
+        def fitting_function(x, var1, var2):
+            return ne.evaluate(str_funct)
+
+    elif num_var == 3:
+        def fitting_function(x, var1, var2, var3):
+            return ne.evaluate(str_funct)
+
+    elif num_var == 4:
+        def fitting_function(x, var1, var2, var3, var4):
+            return ne.evaluate(str_funct)
+
+    elif num_var == 5:
+        def fitting_function(x, var1, var2, var3, var4, var5):
+            return ne.evaluate(str_funct)
+
+    else:
+        raise NameError("The number of parameters must range from 1 to 5")
 
     return fitting_function
 
