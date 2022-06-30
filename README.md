@@ -66,5 +66,32 @@ will be plotted and the fitting parameters will be printed.
 #### Example
 Here there is an example of the `fit` option:
 ```
-plafi fit
+plafi fit     
+
+Path to data to plot: <path_to_plafi>/examples/example1.xlsx     
+Number of rows to skip: 0                      
+Index of x data: 0
+Index of y data: 1
+Number of fitting parameters (max 5): 3                     
+Write the fitting function. Use var1 var2 var3 as fitting parameters.
+>>> var1*cos(x+pi*var2)+T-var3 
+X axis title: a title
+Y axis title: another title
 ```
+where `pi` and `T` are [constants](#constants)<br/>
+And the output:
+```
+parameter 1:  0.99999999999956+/-0.00000000000004
+parameter 2:  1.499999999999994+/-0.000000000000013
+parameter 3:  300.000000000000000+/-0.000000000000028
+```
+# <img src="examples/example1_out3.png" alt="Drawing" width = "450"></img>
+
+### Constants
+Constants can be used when writing the fitting formula. <br/>
+The constants that are included in the numpy library can always be used, such as `e`, `pi` or `euler_gamma`.
+In order to visualize the actual constants the following command can be used:
+```
+plafi const
+```
+In order to create a new constant, the flag `-a` must be added. The flag `-d` can be used to delete an existing constant.
