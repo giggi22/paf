@@ -212,12 +212,9 @@ def valid_function(
     dic = dict(zip(constants.T[0], constants.T[1]))
 
     # dictionary with all the allowed simbols/operations
-    ALLOWED_NAMES = {
-                        k: v for k, v in np.__dict__.items() if not k.startswith("__")
-                    } | {
-                        "x": "x", "var1": "var1", "var2": "var2", "var3": "var3", "var4": "var4", "var5": "var5"
-                    } | dic
-
+    numpy_names = {k: v for k, v in np.__dict__.items() if not k.startswith("__")}
+    variables_names = {"x": "x", "var1": "var1", "var2": "var2", "var3": "var3", "var4": "var4", "var5": "var5"}
+    ALLOWED_NAMES = {**numpy_names, **variables_names}
     # Compile the expression
     code = compile(str_funct, "<string>", "eval")
 
