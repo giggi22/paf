@@ -36,4 +36,5 @@ Here there is an example of the `plot` option:
 plafi plot <path_to_plafi>/examples/example1.xlsx
 ```
 The output will be:
+![](https://github.com/giggi22/plafi/examples/example1_out1.png?raw=true)
 
