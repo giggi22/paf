@@ -14,7 +14,7 @@ pip install --editable plafi
 When installed, PlaFi can be called from command line using `plafi <subcommand>`. A help message will appear by typing
 `plafi -h`. Here are the main commands:
 
-### Plot
+### Plotting
 In order to plot some data, the command 
 ```
 plafi plot <path_to_file>
@@ -53,3 +53,18 @@ Y axis title: this is another title
 ```
 The output will be: <br/>
 # <img src="examples/example1_out2.png" alt="Drawing" width = "450"></img>
+
+### Fitting
+In order to fit some data, the following command can be used:
+```
+plafi fit
+```
+At the user will be asked the file path, the number of rows to skip (can be used to skip headings), the columns to use
+for the fitting procedure, the number of fitting parameters and the axis labels. Then, the data and the fitting function
+will be plotted and the fitting parameters will be printed.
+
+#### Example
+Here there is an example of the `fit` option:
+```
+plafi fit
+```
