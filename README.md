@@ -29,3 +29,11 @@ plafi plot -v
 ```
 can be used. It will ask the user for the path, the number of rows to skip (can be used to skip the headings), the 
 columns to use for the plotting and the axis labels.
+
+#### Example
+Here there is an example of the `plot` option:
+```
+plafi plot <path_to_plafi>/examples/example1.xlsx
+```
+The output will be:
+
