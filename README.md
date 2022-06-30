@@ -39,3 +39,17 @@ The output will be: <br/>
 ![](examples/example1_out1.png?raw=true)
 
 
+Here there is an example of the `plot -v` option:
+```
+plafi plot -v
+               
+Path to data to plot: <path_to_plafi>/examples/example1.xlsx
+Number of rows to skip: 0
+Index of x data: 0
+Indexes of y data: 1 2
+X axis title: this is a title
+Y axis title: this is another title
+
+```
+The output will be: <br/>
+![](examples/example1_out2.png?raw=true)
