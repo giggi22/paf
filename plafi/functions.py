@@ -214,7 +214,7 @@ def valid_function(
     # dictionary with all the allowed simbols/operations
     numpy_names = {k: v for k, v in np.__dict__.items() if not k.startswith("__")}
     variables_names = {"x": "x", "var1": "var1", "var2": "var2", "var3": "var3", "var4": "var4", "var5": "var5"}
-    ALLOWED_NAMES = {**numpy_names, **variables_names}
+    ALLOWED_NAMES = {**numpy_names, **variables_names, **dic}
     # Compile the expression
     code = compile(str_funct, "<string>", "eval")
 
