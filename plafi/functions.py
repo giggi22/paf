@@ -78,7 +78,7 @@ def plot_data(
     # The x values are given by the first column of <data>, all the other columns are plot as function of x
     x_values = data.T[0]
     for idx, y_values in enumerate(data.T[1:]):
-        axs.plot(x_values, y_values, ".", markersize=10, label="column {}".format(idx))
+        axs.plot(x_values, y_values, ".", markersize=10, label="column {}".format(idx+1))
 
     axs.set_xlabel(x_label, fontsize=15)
     axs.set_ylabel(y_label, fontsize=15)
