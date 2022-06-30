@@ -35,7 +35,7 @@ Here there is an example of the `plot` option:
 ```
 plafi plot <path_to_plafi>/examples/example1.xlsx
 ```
-The output will be:
+The output will be: <br/>
 ![](examples/example1_out1.png?raw=true)
 
 
