@@ -36,7 +36,7 @@ Here there is an example of the `plot` option:
 plafi plot <path_to_plafi>/examples/example1.xlsx
 ```
 The output will be: <br/>
-![](examples/example1_out1.png?raw=true)
+# <img src="examples/example1_out1.png" alt="Drawing" width = "450"></img>
 
 
 Here there is an example of the `plot -v` option:
@@ -52,4 +52,4 @@ Y axis title: this is another title
 
 ```
 The output will be: <br/>
-![](examples/example1_out2.png?raw=true)
+# <img src="examples/example1_out2.png" alt="Drawing" width = "450"></img>
