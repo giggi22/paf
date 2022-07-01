@@ -96,7 +96,7 @@ def test_add_constant(monkeypatch):
     name = 'value_name'
     value = 100
     answers = iter([name, str(value), name, str(value)])  # name is inserted also the second time
-    monkeypatch.setattr('builtins.input', lambda name: next(answers))
+    monkeypatch.setattr('builtins.input', lambda _: next(answers))
 
     fc.add_constant()
     constants = fc.read_constants()
@@ -135,18 +135,33 @@ def test_delete_constant(monkeypatch):
 
 
 def test_constants_to_globals():
+    """
+    This function tests the correct behaviour of fc.constants_to_globals().
+    It will first delete the constants file and then create a new one with a constant.
+    The test is passed if the constant can be found in fc.__dict__
+    so it is usable when calling fc.generate_fitting_function().
+    """
     constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "plafi",
                                        "plafi_constants.csv")
     os.remove(constants_file_path)
+
+    # saving a constant
     name1 = "pippo1"
     fc.save_constants([[name1, 3]])
+
     fc.constants_to_globals()
-    constants = fc.read_constants()
     assert np.any("pippo1" in fc.__dict__)
 
 
 def test_plot_data(monkeypatch):
+    """
+    This function tests the correct behaviour of fc.plot_data().
+    It will call plot_data() and check if the titles are the ones set.
+    Monkeypatch is used to not show the plot window and so not freezing the testing procedure.
+    """
+    # setting monkeypatch
     monkeypatch.setattr(plt, 'show', lambda: None)
+
     x_title, y_title = "a random title", "a second random title"
     fig = fc.plot_data(fc.read_data("data1.csv"), x_title, y_title)
     assert fig.axes[0].xaxis.label._text == x_title
@@ -154,6 +169,12 @@ def test_plot_data(monkeypatch):
 
 
 def test_generate_fitting_function():
+    """
+    This function tests the correct behaviour of fc.generate_fitting_function().
+    It will create five different fitting function with different numbers of parameters.
+    The test is passed if all the functions are types.FunctionType.
+    An assert about one point of the function is used in order to reach the 100% coverage of functions.py.
+    """
     func1 = fc.generate_fitting_function("var1*sin(x)", 1)
     func2 = fc.generate_fitting_function("var1*sin(x)+var2", 2)
     func3 = fc.generate_fitting_function("var1*sin(x)+var3", 3)
@@ -171,10 +192,20 @@ def test_generate_fitting_function():
 
 
 def test_fit_data(monkeypatch):
+    """
+    This function tests the correct behaviour of fc.fit_data().
+    Monkeypatch is used to not show the plot window and so not freezing the testing procedure and simulate the inputs.
+    It will try to fit data2.xlsx, where there are simple data.
+    The test is passed if the fit returns the correct fitting value and the plot titles are correct
+    """
+    # setting monkeypatch
     monkeypatch.setattr(plt, 'show', lambda: None)
+
+    # fitting and plotting parameters
     data = fc.read_data("data2.xlsx", rows_to_skip=0)
     fit_func = fc.generate_fitting_function("var1*sin(x)", 1)
     x_title, y_title = "title1", "title2"
+
     popt, perr, fig = fc.fit_data(data, fit_func, x_label=x_title, y_label=y_title)
     assert abs(popt - 1) < 0.001
     assert fig.axes[0].xaxis.label._text == x_title
@@ -182,14 +213,22 @@ def test_fit_data(monkeypatch):
 
 
 def test_fitting_procedure(monkeypatch):
+    """
+    This function tests the correct behaviour of fc.fitting_procedure().
+    Monkeypatch is used to not show the plot window and so not freezing the testing procedure and simulate the inputs.
+    It will run fc.fitting_procedure() two times: the first time to check if the fitting values and the titles are
+    correct; the second time to check if an error is raised when passing a wrong path.
+    """
+    # setting monkeypatch for not showing the plot
     monkeypatch.setattr(plt, 'show', lambda: None)
 
+    # setting monkeypatch for the inputs
     path, rows_to_skip, x_index, y_index = "data2.xlsx", str(0), str(0), str(1)
     num_par, fit_func = str(2), "var1*cos(x+var2)"
     x_title, y_title = "a random title", "a second random title"
     wrong_path = "file_does_not_exist.txt"
     answers = iter([path, rows_to_skip, x_index, y_index, num_par, fit_func, x_title, y_title, wrong_path])
-    monkeypatch.setattr('builtins.input', lambda path: next(answers))
+    monkeypatch.setattr('builtins.input', lambda _: next(answers))
 
     popt, perr, fig = fc.fitting_procedure()
 
@@ -200,14 +239,21 @@ def test_fitting_procedure(monkeypatch):
     with pytest.raises(NameError):
         fc.fitting_procedure()
 
+
 def test_plot_data_verbose(monkeypatch):
+    """
+    This function tests the correct behaviour of fc.plot_data_verbose().
+    Monkeypatch is used to not show the plot window and so not freezing the testing procedure and simulate the inputs.
+    It will run fc.fitting_procedure() two times: the first time to check if the titles are
+    correct; the second time to check if an error is raised when passing a wrong path.
+    """
     monkeypatch.setattr(plt, 'show', lambda: None)
 
     path, rows_to_skip, x_index, y_index = "data1.csv", str(0), str(0), str(1)
     x_title, y_title = "a random title", "a second random title"
     wrong_path = "file_does_not_exist.txt"
     answers = iter([path, rows_to_skip, x_index, y_index, x_title, y_title, wrong_path])
-    monkeypatch.setattr('builtins.input', lambda path: next(answers))
+    monkeypatch.setattr('builtins.input', lambda _: next(answers))
 
     fig = fc.plot_data_verbose()
     assert fig.axes[0].xaxis.label._text == x_title
@@ -217,5 +263,9 @@ def test_plot_data_verbose(monkeypatch):
 
 
 def test_print_constants():
+    """
+    This function tests the correct behaviour of fc.print_constants().
+    The test is passed if fc.print_constants() return a string.
+    """
     table = fc.print_constants()
     assert isinstance(table, str)
