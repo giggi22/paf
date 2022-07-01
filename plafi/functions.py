@@ -256,6 +256,7 @@ def generate_fitting_function(
     # "pi" and "e" are added to globals() in order to be consistent with the output of valid_function()
     globals()["pi"] = np.pi
     globals()["e"] = np.e
+    globals()["euler_gamma"] = np.euler_gamma
 
     # reading the constants and adding them to globals()
     constants_to_globals()
