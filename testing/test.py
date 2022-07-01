@@ -8,8 +8,20 @@ import pytest
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from plafi import functions as fc
 
+"""
+These are the testing functions, which are focused on plafi/functions.py.
+Note that for some functions, monkeypatch has been used.
+Monkeypatch allows to 'simulate' the user input or avoid the blocking of the program
+due to some operations, i.e. the function show() from the matplotlib library
+create a window that will freeze the testing procedure, unless it is closed manually. 
+"""
 
 def test_read_data():
+    """
+    data1.txt, data1.csv and data1.xlsx are three handwritten file containing the same data.
+    The function check if, once they are read they are the same, and if an error is raised
+    when the file can not be read.
+    """
     assert np.all(fc.read_data("data1.txt") == fc.read_data("data1.csv"))
     assert np.all(fc.read_data("data1.txt") == fc.read_data("data1.xlsx"))
     with pytest.raises(NameError):
@@ -17,11 +29,20 @@ def test_read_data():
 
 
 def test_valid_function():
-    assert fc.valid_function("sin(x)+cos(x)") == True
+    """
+    This function will assert that fc.valid_function() can
+    recognize a usable function and a not valid one.
+    """
+    assert fc.valid_function("pi*sin(x)+cos(x)") == True
     assert fc.valid_function("constant_that_does_not_exist*x") == False
 
 
 def test_save_constants():
+    """
+    This function will check that fc.save_constants() works properly.
+    It will delete the actual constants file and save a new empty one using the function under test.
+    If the file is saved correctly (so it exists) the test is passed.
+    """
     constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "plafi",
                                        "plafi_constants.csv")
     os.remove(constants_file_path)
@@ -30,6 +51,11 @@ def test_save_constants():
 
 
 def test_initialize_constants():
+    """
+    This function will check that fc.initialize_constants() works properly.
+    It will delete the actual constants file and initialize a new one using the function under test.
+    If the file exists the test is passed.
+    """
     constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "plafi",
                                        "plafi_constants.csv")
     os.remove(constants_file_path)
@@ -38,6 +64,11 @@ def test_initialize_constants():
 
 
 def test_read_constants():
+    """
+    This function check the proper behaviour of fc.read_constants().
+    The actual constants file will be deleted and a new one is created with two constants.
+    The test is passed if when reading the constants, they exist.
+    """
     constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "plafi",
                                        "plafi_constants.csv")
     os.remove(constants_file_path)
@@ -49,19 +80,24 @@ def test_read_constants():
 
 
 def test_add_constant(monkeypatch):
+    """
+    This function tests the correct behaviour of fc.add_constant().
+    It will first delete the constants file and then create a new empty one.
+    Monkeypatch is then set with the simulated input: first it will insert a new constant
+    and then will try to add an existing one to raise an error.
+    The test is passed if the first constant is added correctly and the second one raise an error.
+    """
     constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "plafi",
                                        "plafi_constants.csv")
     os.remove(constants_file_path)
     fc.initialize_constants()
-    # provided inputs
+
+    # monkeypatch setting
     name = 'value_name'
     value = 100
-
-    # creating iterator object
-    answers = iter([name, str(value), name, str(value)])
-
-    # using lambda statement for mocking
+    answers = iter([name, str(value), name, str(value)])  # name is inserted also the second time
     monkeypatch.setattr('builtins.input', lambda name: next(answers))
+
     fc.add_constant()
     constants = fc.read_constants()
     assert np.any(constants["name"].str.contains(name))
@@ -71,28 +107,30 @@ def test_add_constant(monkeypatch):
 
 
 def test_delete_constant(monkeypatch):
+    """
+    This function tests the correct behaviour of fc.delete_constant().
+    It will first delete the constants file and then create a new one with a constant.
+    Monkeypatch is then set with the simulated input: it will try twice to eliminate that constant.
+    The test is passed if the constant is deleted at the first try and an error occurs at the second one.
+    """
     constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "plafi",
                                        "plafi_constants.csv")
     os.remove(constants_file_path)
     fc.initialize_constants()
-    # provided inputs
+
+    # setting monkeypatch
     name = 'value_name'
     value = 100
-
-    # creating iterator object
-    answers = iter([name, str(value)])
-
-    # using lambda statement for mocking
-    monkeypatch.setattr('builtins.input', lambda name: next(answers))
-    fc.add_constant()
-
     monkeypatch.setattr('builtins.input', lambda _: name)
+
+    # saving a constant
+    fc.save_constants([[name, value]])
+
     fc.delete_constant()
     constants = fc.read_constants()
     assert np.any(constants["name"].str.contains(name)) == False
 
     with pytest.raises(NameError):
-        monkeypatch.setattr('builtins.input', lambda _: name)
         fc.delete_constant()
 
 
