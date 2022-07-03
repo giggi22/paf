@@ -95,3 +95,26 @@ In order to visualize the actual constants the following command can be used:
 plafi const
 ```
 In order to create a new constant, the flag `-a` must be added. The flag `-d` can be used to delete an existing constant.
+Here an example:
+```
+plafi const
+
+╒════════╤═════════╕
+│ name   │   value │
+╞════════╪═════════╡
+│ T      │     300 │
+╘════════╧═════════╛
+```
+```
+plafi const -a
+
+New constant name: k
+New constant value: 3.45
+╒════════╤═════════╕
+│ name   │   value │
+╞════════╪═════════╡
+│ T      │  300    │
+├────────┼─────────┤
+│ k      │    3.45 │
+╘════════╧═════════╛
+```
