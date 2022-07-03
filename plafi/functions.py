@@ -466,7 +466,6 @@ def delete_constant(
 
     constants = read_constants()
     name = input("Constant name to delete: ")
-    print(constants["name"])
     if not np.any(constants["name"].str.contains(name)):
         raise NameError("This name does not exist")
     else:
