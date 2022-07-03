@@ -1,5 +1,5 @@
 # PlaFi
-PlaFi (**pl**otter **a**nd **fi**tter) is an application that allows to quickly plot and fit some data. Tt has been
+PlaFi (**pl**otter **a**nd **fi**tter) is an application that allows to quickly plot and fit some data. It has been
 designed to be used during data taking sessions, in order to have a quick display of simple data, and to confirm or not 
 a certain behaviour.
 
@@ -20,7 +20,7 @@ In order to plot some data, the command
 plafi plot <path_to_file>
 ```
 can be used. The file must be of type _.txt_, _.xlsx_ or _.csv_ (with ';' as separator). Every column will be plotted as
-function of the first one. <br/> In case of **headings** in the file, follow the next instruction.
+function of the first one. In case of **headings** in the file, the flag `-v` must be used.
 
 
 In order to select a specific column to plot, the command 
