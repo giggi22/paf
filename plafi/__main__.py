@@ -36,6 +36,7 @@ def main():
         if args.verbose:
             fc.plot_data_verbose()
         else:
+            # an error is raised if the path is not passed or it does not exist
             if path == None:
                 raise ValueError("A path must be passed")
             elif not os.path.exists(path):
