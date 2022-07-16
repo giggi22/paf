@@ -57,16 +57,31 @@ The output will be: <br/>
 ### Fitting
 In order to fit some data, the following command can be used:
 ```
-plafi fit
+plafi fit <path_to_configuration_file>
 ```
+The configuration file can be created in the current working directory by using the command `plafi fit -c`. It can be
+modified (as if it were a _.txt_ file) with all the parameters needed for the fitting procedure. <br/>
+Here there is an example of a configuration file:
+```
+[fitting parameters]
+path = <path_to_plafi>/examples/example1.xlsx
+rows to skip = 0
+x data index = 0
+y data index = 1
+number fitting parameters = 3
+fitting function = var1*cos(x+pi*var2)+T-var3 
+x-axis title = a title
+y-axis title = another title
+```
+Another possibility is to insert all the parameters in the command line using the command`plafi fit -v`.
 At the user will be asked the file path, the number of rows to skip (can be used to skip headings), the columns to use
 for the fitting procedure, the number of fitting parameters and the axis labels. Then, the data and the fitting function
 will be plotted and the fitting parameters will be printed.
 
 #### Example
-Here there is an example of the `fit` option:
+Here there is an example of the `fit -v` option:
 ```
-plafi fit     
+plafi fit -v
 
 Path to data to plot: <path_to_plafi>/examples/example1.xlsx     
 Number of rows to skip: 0                      
