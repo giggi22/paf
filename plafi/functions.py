@@ -200,11 +200,6 @@ def valid_function(
     This function check if <str_funct> can be used as fitting function.
     The function is valid if contains mathematical operation that are included in the numpy module.
     Moreover, it can contain x as variable, and some parameter (var1 -> var5).
-
-    Warnings
-    --------
-    This function will accept symbols as "pi" or "e" because they are
-    included in numpy, even though they are not included in the constants file.
     """
 
     # creating a dictionary with all the constants
@@ -247,16 +242,7 @@ def generate_fitting_function(
     Notes
     -----
     Given a string with written the fitting function,this function returns a usable fitting function.
-
-    Warnings
-    --------
-    This function does include "e" and "pi", but they will be overwritten if the user put them in the constants file.
     """
-
-    # "pi" and "e" are added to globals() in order to be consistent with the output of valid_function()
-    globals()["pi"] = np.pi
-    globals()["e"] = np.e
-    globals()["euler_gamma"] = np.euler_gamma
 
     # reading the constants and adding them to globals()
     constants_to_globals()
@@ -346,7 +332,8 @@ def initialize_constants(
 
     constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "plafi_constants.csv")
     if not os.path.exists(constants_file_path):
-        save_constants(None)
+        # "pi", "e" and "euler_gamma" are initialized in the constants file, they can be later modified by the user
+        save_constants([["pi", np.pi], ["e", np.e], ["euler_gamma", np.euler_gamma]])
 
 
 def read_constants(
