@@ -359,7 +359,7 @@ def initialize_conf_file(
 
 def fitting_from_conf(
         path_to_conf_file: str,  # path to configuration file
-):
+) -> [np.ndarray, np.ndarray, matplotlib.figure.Figure]:
     """
     Parameters
     ----------
