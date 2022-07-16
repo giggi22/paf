@@ -22,6 +22,7 @@ def main():
     fit_parser = subparsers.add_parser('fit', help='fit the data')
     fit_parser.add_argument("path", help='path to fitting configuration file', type=str, nargs="?")
     fit_parser.add_argument("-v", "--verbose", help="Iterative input of fitting parameters", action="store_true")
+    fit_parser.add_argument("-c", "--configuration", help="Create a configuration file in cwd", action="store_true")
 
     # CONSTANTS argument
     constants_parser = subparsers.add_parser('const', help='manage the constants')
@@ -54,6 +55,8 @@ def main():
     elif args.subparser == 'fit':
         if args.verbose:
             fc.fitting_procedure()
+        elif args.configuration:
+            fc.initialize_conf_file()
         else:
             path = args.path
             # an error is raised if the path is not passed or it does not exist

@@ -337,6 +337,26 @@ def fitting_procedure(
         return fit_data(data, fitting_function, x_index, y_index, x_title, y_title)
 
 
+def initialize_conf_file(
+
+):
+    """
+    Notes
+    -----
+    This function creates a new fitting configuration file in the current working directory.
+    """
+
+    current_path = os.getcwd()
+    i = 0
+    while os.path.exists(os.path.join(current_path, "fitting_parameters%s.cfg" % i)):
+        i += 1
+
+    with open(os.path.join(current_path, "fitting_parameters%s.cfg" % i), 'w') as f:
+        f.write("[fitting parameters]\npath = \nrows to skip = 0\nx data index = 0\n"
+                "y data index = 1\nnumber fitting parameters = 1\nfitting function = "
+                "var1+x\nx-axis title = x title\ny-axis title = y title")
+
+
 def fitting_from_conf(
         path_to_conf_file: str,  # path to configuration file
 ):
