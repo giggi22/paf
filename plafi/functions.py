@@ -244,29 +244,45 @@ def generate_fitting_function(
     Given a string with written the fitting function,this function returns a usable fitting function.
     """
 
-    # reading the constants and adding them to globals()
-    constants_to_globals()
+    # creating a dictionary with all the constants
+    constants = read_constants().to_numpy()
+    dic = dict(zip(constants.T[0], constants.T[1]))
 
     # creating the fitting function depending on the number of fitting parameters
     if num_var == 1:
         def fitting_function(x, var1):
-            return ne.evaluate(str_funct)
+            # creating dictionary with all constants and parameters that is passed to ne.evaluate()
+            variables_names = {"x": x, "var1": var1}
+            param_and_const = {**variables_names, **dic}
+            return ne.evaluate(str_funct, local_dict=param_and_const)
 
     elif num_var == 2:
         def fitting_function(x, var1, var2):
-            return ne.evaluate(str_funct)
+            # creating dictionary with all constants and parameters that is passed to ne.evaluate()
+            variables_names = {"x": x, "var1": var1, "var2": var2}
+            param_and_const = {**variables_names, **dic}
+            return ne.evaluate(str_funct, local_dict=param_and_const)
 
     elif num_var == 3:
         def fitting_function(x, var1, var2, var3):
-            return ne.evaluate(str_funct)
+            # creating dictionary with all constants and parameters that is passed to ne.evaluate()
+            variables_names = {"x": x, "var1": var1, "var2": var2, "var3": var3}
+            param_and_const = {**variables_names, **dic}
+            return ne.evaluate(str_funct, local_dict=param_and_const)
 
     elif num_var == 4:
         def fitting_function(x, var1, var2, var3, var4):
-            return ne.evaluate(str_funct)
+            # creating dictionary with all constants and parameters that is passed to ne.evaluate()
+            variables_names = {"x": x, "var1": var1, "var2": var2, "var3": var3, "var4": var4}
+            param_and_const = {**variables_names, **dic}
+            return ne.evaluate(str_funct, local_dict=param_and_const)
 
     elif num_var == 5:
         def fitting_function(x, var1, var2, var3, var4, var5):
-            return ne.evaluate(str_funct)
+            # creating dictionary with all constants and parameters that is passed to ne.evaluate()
+            variables_names = {"x": x, "var1": var1, "var2": var2, "var3": var3, "var4": var4, "var5": var5}
+            param_and_const = {**variables_names, **dic}
+            return ne.evaluate(str_funct, local_dict=param_and_const)
 
     else:
         raise NameError("The number of parameters must range from 1 to 5")
@@ -354,25 +370,6 @@ def read_constants(
     constants = pd.read_csv(constants_file_path, index_col=False, sep=";")
 
     return constants
-
-
-def constants_to_globals(
-
-):
-
-    """
-    Notes
-    -----
-    This function will read the file containing the constants and will put them in globals().
-    It is used to create custom variable that can be used to define dynamically new functions.
-    """
-
-    constants = read_constants().to_numpy()
-    dic = dict(zip(constants.T[0], constants.T[1]))
-
-    for key in dic.keys():
-        if key not in globals():
-            globals()[key] = dic[key]
 
 
 def print_constants(
