@@ -20,6 +20,8 @@ def main():
 
     # FITTING argument
     fit_parser = subparsers.add_parser('fit', help='fit the data')
+    fit_parser.add_argument("path", help='path to fitting configuration file', type=str, nargs="?")
+    fit_parser.add_argument("-v", "--verbose", help="Iterative input of fitting parameters", action="store_true")
 
     # CONSTANTS argument
     constants_parser = subparsers.add_parser('const', help='manage the constants')
@@ -50,7 +52,17 @@ def main():
 
     # fit case
     elif args.subparser == 'fit':
-        fc.fitting_procedure()
+        if args.verbose:
+            fc.fitting_procedure()
+        else:
+            path = args.path
+            # an error is raised if the path is not passed or it does not exist
+            if path == None:
+                raise ValueError("A path to a configuration file must be passed")
+            elif not os.path.exists(path):
+                raise ValueError("The file does not exist")
+            else:
+                fc.fitting_from_conf(path)
 
     # const case
     elif args.subparser == 'const':

@@ -9,6 +9,7 @@ import numexpr as ne
 import os
 from tabulate import tabulate
 import sys
+import configparser
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import graphics
@@ -333,6 +334,51 @@ def fitting_procedure(
         fitting_function = generate_fitting_function(str_fitting_function, num_var)
         x_title = input("X axis title: ")
         y_title = input("Y axis title: ")
+        return fit_data(data, fitting_function, x_index, y_index, x_title, y_title)
+
+
+def fitting_from_conf(
+        path_to_conf_file: str,  # path to configuration file
+):
+    """
+    Parameters
+    ----------
+    path_to_conf_file (str): path to configuration file
+
+    Returns
+    -------
+    popt (np.ndarray): values of the fitting parameters
+    perr (np.ndarray): standard deviations of fitting parameters
+    fig (matplotlib.figure.Figure): figure containing the plot
+
+    Notes
+    -----
+    Given a valid configuration file, the function performs a fit.
+    The parameters for the fitting procedure are: path (str), rows to skip (int),
+    x data index (int), y data index (int), number fitting parameters (int),
+    fitting function (str), x-axis title (str), y-axis title (str).
+    """
+
+    # reading configuration file
+    config = configparser.ConfigParser()
+    config.read(path_to_conf_file)
+
+    # reading all the parameters
+    path = str(config["fitting parameters"]["path"])
+    if not os.path.exists(path):
+        raise NameError("The file does not exist")  # an error is raised if the file does not exist
+    rows_to_skip = int(config["fitting parameters"]["rows to skip"])
+    data = read_data(path, rows_to_skip)
+    x_index = int(config["fitting parameters"]["x data index"])
+    y_index = int(config["fitting parameters"]["y data index"])
+    num_var = int(config["fitting parameters"]["number fitting parameters"])
+    str_fitting_function = str(config["fitting parameters"]["fitting function"])
+    x_title = str(config["fitting parameters"]["x-axis title"])
+    y_title = str(config["fitting parameters"]["y-axis title"])
+
+    # fitting procedure if the fitting function is valid
+    if valid_function(str_fitting_function):
+        fitting_function = generate_fitting_function(str_fitting_function, num_var)
         return fit_data(data, fitting_function, x_index, y_index, x_title, y_title)
 
 
