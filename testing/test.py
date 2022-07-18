@@ -4,6 +4,8 @@ import sys
 import os
 import types
 import pytest
+from hypothesis import given
+import hypothesis.extra.numpy as hen
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from plafi import functions as fc
@@ -217,25 +219,48 @@ def test_plot_data(monkeypatch):
     assert fig.axes[0].yaxis.label._text == y_title
 
 
-def test_generate_fitting_function():
+def test_generate_fitting_function_correct_type():
     """
     This function tests the correct behaviour of fc.generate_fitting_function().
     It will create five different fitting function with different numbers of parameters.
     The test is passed if all the functions are types.FunctionType.
-    An assert about one point of the function is used in order to reach the 100% coverage of functions.py.
     """
-    func1 = fc.generate_fitting_function("var1*sin(x)", 1)
+    func1 = fc.generate_fitting_function("var1*sin(x)+var1", 1)
     func2 = fc.generate_fitting_function("var1*sin(x)+var2", 2)
     func3 = fc.generate_fitting_function("var1*sin(x)+var3", 3)
     func4 = fc.generate_fitting_function("var1*sin(x)+var4", 4)
     func5 = fc.generate_fitting_function("var1*sin(x)+var5", 5)
-    assert func5(0, 0, 0, 0, 0, 0) == func4(0, 0, 0, 0, 0)
-    assert func3(0, 0, 0, 0) == func2(0, 0, 0)
     assert isinstance(func1, types.FunctionType)
     assert isinstance(func2, types.FunctionType)
     assert isinstance(func3, types.FunctionType)
     assert isinstance(func4, types.FunctionType)
     assert isinstance(func5, types.FunctionType)
+
+
+@given(array=hen.arrays(dtype=float, shape=6))
+def test_generate_fitting_function_correct_values(array):
+    """
+    This function tests the correct behaviour of fc.generate_fitting_function().
+    It will create five different fitting function with different numbers of parameters.
+    The test is passed if all the functions work properly.
+    """
+    func1 = fc.generate_fitting_function("var1*sin(x)+var1", 1)
+    func2 = fc.generate_fitting_function("var1*sin(x)+var2", 2)
+    func3 = fc.generate_fitting_function("var1*sin(x)+var3", 3)
+    func4 = fc.generate_fitting_function("var1*sin(x)+var4", 4)
+    func5 = fc.generate_fitting_function("var1*sin(x)+var5", 5)
+    assert np.isclose(func1(*array[0:2]).item(0), (array[1]*np.sin(array[0])+array[1]).item(0), equal_nan=True)
+    assert np.isclose(func2(*array[0:3]).item(0), (array[1]*np.sin(array[0])+array[2]).item(0), equal_nan=True)
+    assert np.isclose(func3(*array[0:4]).item(0), (array[1]*np.sin(array[0])+array[3]).item(0), equal_nan=True)
+    assert np.isclose(func4(*array[0:5]).item(0), (array[1]*np.sin(array[0])+array[4]).item(0), equal_nan=True)
+    assert np.isclose(func5(*array).item(0), (array[1]*np.sin(array[0])+array[5]).item(0), equal_nan=True)
+
+
+def test_generate_fitting_function_error_raised():
+    """
+    This function tests the correct behaviour of fc.generate_fitting_function() when a wrong input is given.
+    The test is passed if an error is raised.
+    """
     with pytest.raises(NameError):
         fc.generate_fitting_function("var1*sin(x)", 6)
 
