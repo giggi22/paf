@@ -102,7 +102,8 @@ def test_read_constants():
                                        "plafi_constants.csv")
     os.remove(constants_file_path)
     name1, name2 = "a random name", ""
-    fc.save_constants([[name1, 3], [name2, np.nan]])
+    assert not os.path.exists(constants_file_path)
+    fc.save_constants(np.array([[name1, 3], [name2, np.nan]]))
     constants = fc.read_constants()
     assert np.any(constants["name"].str.contains(name1))
     assert np.any(constants["name"].str.contains(name2))
