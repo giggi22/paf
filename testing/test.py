@@ -134,25 +134,6 @@ def test_delete_constant(monkeypatch):
         fc.delete_constant()
 
 
-def test_constants_to_globals():
-    """
-    This function tests the correct behaviour of fc.constants_to_globals().
-    It will first delete the constants file and then create a new one with a constant.
-    The test is passed if the constant can be found in fc.__dict__
-    so it is usable when calling fc.generate_fitting_function().
-    """
-    constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "plafi",
-                                       "plafi_constants.csv")
-    os.remove(constants_file_path)
-
-    # saving a constant
-    name1 = "pippo1"
-    fc.save_constants([[name1, 3]])
-
-    fc.constants_to_globals()
-    assert np.any("pippo1" in fc.__dict__)
-
-
 def test_plot_data(monkeypatch):
     """
     This function tests the correct behaviour of fc.plot_data().
