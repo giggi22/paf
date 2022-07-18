@@ -67,26 +67,29 @@ def test_save_constants():
     """
     This function will check that fc.save_constants() works properly.
     It will delete the actual constants file and save a new empty one using the function under test.
-    If the file is saved correctly (so it exists) the test is passed.
+    If the saved file exists and contains the correct constant, the test is passed.
     """
     constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "plafi",
                                        "plafi_constants.csv")
     os.remove(constants_file_path)
-    fc.save_constants(None)
+    fc.save_constants(np.array([["test_const", 1.]]))
     assert os.path.exists(constants_file_path)
+    assert np.all(fc.read_constants().to_numpy() == np.array([["test_const", 1.]], dtype=object))
 
 
 def test_initialize_constants():
     """
     This function will check that fc.initialize_constants() works properly.
     It will delete the actual constants file and initialize a new one using the function under test.
-    If the file exists the test is passed.
+    If the file exists and contains the correct constants the test is passed.
     """
     constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "plafi",
                                        "plafi_constants.csv")
     os.remove(constants_file_path)
     fc.initialize_constants()
     assert os.path.exists(constants_file_path)
+    assert np.all(fc.read_constants().to_numpy() ==
+                  np.array([["pi", np.pi], ["e", np.e], ["euler_gamma", np.euler_gamma]], dtype=object))
 
 
 def test_read_constants():
