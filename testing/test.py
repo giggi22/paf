@@ -35,12 +35,31 @@ def test_read_data_error_raised():
         fc.read_data("a_not_readable_file.pdf")
 
 
-def test_valid_function():
+def test_valid_function_true():
     """
-    This function will assert that fc.valid_function() can
-    recognize a usable function and a not valid one.
+    This function will assert that fc.valid_function() can recognize a usable function.
     """
+
+    # the constant file is deleted and initialized in order to have "pi" and use it for the testing
+    constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "plafi",
+                                       "plafi_constants.csv")
+    os.remove(constants_file_path)
+    fc.initialize_constants()
+
     assert fc.valid_function("pi*sin(x)+cos(x)") == True
+
+
+def test_valid_function_false():
+    """
+    This function will assert that fc.valid_function() can recognize a not usable function.
+    """
+
+    # the constant file is initialized in order to be sure that "constant_that_does_not_exist" does not exist
+    constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "plafi",
+                                       "plafi_constants.csv")
+    os.remove(constants_file_path)
+    fc.initialize_constants()
+
     assert fc.valid_function("constant_that_does_not_exist*x") == False
 
 
