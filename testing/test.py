@@ -16,16 +16,23 @@ due to some operations, i.e. the function show() from the matplotlib library
 create a window that will freeze the testing procedure, unless it is closed manually. 
 """
 
+
 def test_read_data():
     """
     data1.txt, data1.csv and data1.xlsx are three handwritten file containing the same data.
-    The function check if, once they are read they are the same, and if an error is raised
-    when the file can not be read.
+    The function check, once they are read, if they are the same.
     """
     assert np.all(fc.read_data("data1.txt") == fc.read_data("data1.csv"))
     assert np.all(fc.read_data("data1.txt") == fc.read_data("data1.xlsx"))
+    assert np.all(fc.read_data("data1.txt") == [[-5., 0.], [0., 1.], [2., 3.], [3.1, 4.5], [4., 120.]])
+
+
+def test_read_data_error_raised():
+    """
+    This function check if an error is raised correctly when a not readable is passed to fc.read_data().
+    """
     with pytest.raises(NameError):
-        fc.read_data("a_non_readable_file.pdf")
+        fc.read_data("a_not_readable_file.pdf")
 
 
 def test_valid_function():
