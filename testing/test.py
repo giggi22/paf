@@ -161,13 +161,12 @@ def test_delete_constant(monkeypatch):
     """
     This function tests the correct behaviour of fc.delete_constant().
     It will first delete the constants file and then create a new one with a constant.
-    Monkeypatch is then set with the simulated input: it will try twice to eliminate that constant.
-    The test is passed if the constant is deleted at the first try and an error occurs at the second one.
+    Monkeypatch is then set with the simulated input: it will try to eliminate that constant.
+    The test is passed if the constant is deleted.
     """
     constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "plafi",
                                        "plafi_constants.csv")
     os.remove(constants_file_path)
-    fc.initialize_constants()
 
     # setting monkeypatch
     name = 'value_name'
@@ -175,11 +174,29 @@ def test_delete_constant(monkeypatch):
     monkeypatch.setattr('builtins.input', lambda _: name)
 
     # saving a constant
-    fc.save_constants([[name, value]])
+    fc.save_constants(np.array([[name, value]]))
 
     fc.delete_constant()
     constants = fc.read_constants()
+
     assert np.any(constants["name"].str.contains(name)) == False
+
+
+def test_delete_constant_error_raised(monkeypatch):
+    """
+    This function tests the correct behaviour of fc.delete_constant() when an error is raised.
+    It will first delete the constants file and then create a new empty one.
+    Monkeypatch is then set with the simulated input: it will try to eliminate a constant.
+    The test is passed if an error is raised.
+    """
+    constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "plafi",
+                                       "plafi_constants.csv")
+    os.remove(constants_file_path)
+    fc.initialize_constants()
+
+    # setting monkeypatch
+    name = 'value_name'  # this constant does not exist in the initialized constants file
+    monkeypatch.setattr('builtins.input', lambda _: name)
 
     with pytest.raises(NameError):
         fc.delete_constant()
