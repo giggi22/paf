@@ -112,10 +112,9 @@ def test_read_constants():
 def test_add_constant(monkeypatch):
     """
     This function tests the correct behaviour of fc.add_constant().
-    It will first delete the constants file and then create a new empty one.
-    Monkeypatch is then set with the simulated input: first it will insert a new constant
-    and then will try to add an existing one to raise an error.
-    The test is passed if the first constant is added correctly and the second one raise an error.
+    It will first delete the constants file and then initialize a new one.
+    Monkeypatch is then set with the simulated input: it will insert a new constant and its value.
+    The test is passed if the first constant is added correctly.
     """
     constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "plafi",
                                        "plafi_constants.csv")
@@ -125,12 +124,34 @@ def test_add_constant(monkeypatch):
     # monkeypatch setting
     name = 'value_name'
     value = 100
-    answers = iter([name, str(value), name, str(value)])  # name is inserted also the second time
+    answers = iter([name, str(value)])
     monkeypatch.setattr('builtins.input', lambda _: next(answers))
 
     fc.add_constant()
     constants = fc.read_constants()
     assert np.any(constants["name"].str.contains(name))
+
+
+def test_add_constant_error_raised(monkeypatch):
+    """
+    This function tests the correct behaviour of fc.add_constant() when a wrong input is given.
+    It will first delete the constants file and then create a new one with a constant.
+    Monkeypatch is then set with the simulated input: it will insert an existing constant and its value.
+    The test is passed if an error is raised.
+    """
+    # path to constants file
+    constants_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "plafi",
+                                       "plafi_constants.csv")
+    os.remove(constants_file_path)
+
+    # monkeypatch setting
+    name = 'value_name'
+    value = 100
+    answers = iter([name, str(value)])
+    monkeypatch.setattr('builtins.input', lambda _: next(answers))
+
+    # saving the constant
+    fc.save_constants(np.array([[name, value]]))
 
     with pytest.raises(NameError):
         fc.add_constant()
