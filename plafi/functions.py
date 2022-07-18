@@ -43,7 +43,7 @@ def read_data(
     elif path_to_data.endswith(".xlsx"):
         data = pd.read_excel(path_to_data, header=None, skiprows=rows_to_skip).to_numpy()
     elif path_to_data.endswith(".csv"):
-        data = pd.read_csv(path_to_data, delimiter=";", skiprows=rows_to_skip).to_numpy()
+        data = pd.read_csv(path_to_data, delimiter=";", header=None, skiprows=rows_to_skip).to_numpy()
     else:
         # an error is raised if the extension is not between the one that can be read
         raise NameError("Could not read this file")
