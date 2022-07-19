@@ -394,3 +394,20 @@ def test_initialize_conf_file_more_files():
     assert os.path.exists("fitting_parameters1.cfg")
     os.remove("fitting_parameters0.cfg")
     os.remove("fitting_parameters1.cfg")
+
+
+def test_fitting_from_conf(monkeypatch):
+    """
+    This function tests the correct behaviour of fc.fitting_from_conf().
+    The function is called twice, the test is passed if the created configuration files
+    have the correct names.
+    monkeypatch is used to not show the plot.
+    """
+    monkeypatch.setattr(plt, 'show', lambda: None)
+
+    popt, perr, fig = fc.fitting_from_conf("test_conf_file.cfg")
+
+    assert abs(abs(popt[0]) - 1) < 0.001
+    assert abs(abs(popt[1]) - np.pi / 2) < 0.001
+    assert fig.axes[0].xaxis.label._text == "a random title"
+    assert fig.axes[0].yaxis.label._text == "a second random title"
