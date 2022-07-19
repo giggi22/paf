@@ -399,8 +399,7 @@ def test_initialize_conf_file_more_files():
 def test_fitting_from_conf(monkeypatch):
     """
     This function tests the correct behaviour of fc.fitting_from_conf().
-    The function is called twice, the test is passed if the created configuration files
-    have the correct names.
+    The function is called, the test is passed if the fitting is performed correctly.
     monkeypatch is used to not show the plot.
     """
     monkeypatch.setattr(plt, 'show', lambda: None)
@@ -411,3 +410,14 @@ def test_fitting_from_conf(monkeypatch):
     assert abs(abs(popt[1]) - np.pi / 2) < 0.001
     assert fig.axes[0].xaxis.label._text == "a random title"
     assert fig.axes[0].yaxis.label._text == "a second random title"
+
+
+def test_fitting_from_conf_error_raised():
+    """
+    This function tests the correct behaviour of fc.fitting_from_conf() when a wrong input is given.
+    The function is called and a configuration file with a wrong path is passed, the test is passed
+    if an error is raised. monkeypatch is used to not show the plot.
+    """
+
+    with pytest.raises(NameError):
+        fc.fitting_from_conf("test_conf_file_error.cfg")
