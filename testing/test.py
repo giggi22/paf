@@ -380,3 +380,17 @@ def test_initialize_conf_file():
                                "x-axis title = x title\ny-axis title = y title"
     file_conf.close()
     os.remove("fitting_parameters0.cfg")
+
+
+def test_initialize_conf_file_more_files():
+    """
+    This function tests the correct behaviour of fc.initialize_test_conf().
+    The function is called twice, the test is passed if the created configuration files
+    have the correct names.
+    """
+    fc.initialize_conf_file()
+    fc.initialize_conf_file()
+    assert os.path.exists("fitting_parameters0.cfg")
+    assert os.path.exists("fitting_parameters1.cfg")
+    os.remove("fitting_parameters0.cfg")
+    os.remove("fitting_parameters1.cfg")
