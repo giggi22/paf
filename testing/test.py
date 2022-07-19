@@ -364,3 +364,19 @@ def test_print_constants():
     """
     table = fc.print_constants()
     assert isinstance(table, str)
+
+
+def test_initialize_conf_file():
+    """
+    This function tests the correct behaviour of fc.initialize_test_conf().
+    The test is passed if, when the function is called, the new configuration
+    file is created and contains the correct values.
+    """
+    fc.initialize_conf_file()
+    assert os.path.exists("fitting_parameters0.cfg")
+    file_conf = open("fitting_parameters0.cfg", "r")
+    assert file_conf.read() == "[fitting parameters]\npath = \nrows to skip = 0\nx data index = 0\n" \
+                               "y data index = 1\nnumber fitting parameters = 1\nfitting function = var1+x\n" \
+                               "x-axis title = x title\ny-axis title = y title"
+    file_conf.close()
+    os.remove("fitting_parameters0.cfg")
