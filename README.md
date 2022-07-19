@@ -104,7 +104,7 @@ parameter 3:  300.000000000000000+/-0.000000000000028
 
 ### Constants
 Constants can be used when writing the fitting formula. <br/>
-The constants that are included in the numpy library can always be used, such as `e`, `pi` or `euler_gamma`.
+The constants that are included in the numpy library (`e`, `pi` or `euler_gamma`) are initialized with the constants file.
 In order to visualize the actual constants the following command can be used:
 ```
 plafi const
