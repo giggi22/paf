@@ -290,8 +290,7 @@ def test_fitting_procedure(monkeypatch):
     """
     This function tests the correct behaviour of fc.fitting_procedure().
     Monkeypatch is used to not show the plot window and so not freezing the testing procedure and simulate the inputs.
-    It will run fc.fitting_procedure() two times: the first time to check if the fitting values and the titles are
-    correct; the second time to check if an error is raised when passing a wrong path.
+    It will run fc.fitting_procedure() and check if the fitting values and the titles are correct.
     """
     # setting monkeypatch for not showing the plot
     monkeypatch.setattr(plt, 'show', lambda: None)
@@ -300,8 +299,7 @@ def test_fitting_procedure(monkeypatch):
     path, rows_to_skip, x_index, y_index = "data2.xlsx", str(0), str(0), str(1)
     num_par, fit_func = str(2), "var1*cos(x+var2)"
     x_title, y_title = "a random title", "a second random title"
-    wrong_path = "file_does_not_exist.txt"
-    answers = iter([path, rows_to_skip, x_index, y_index, num_par, fit_func, x_title, y_title, wrong_path])
+    answers = iter([path, rows_to_skip, x_index, y_index, num_par, fit_func, x_title, y_title])
     monkeypatch.setattr('builtins.input', lambda _: next(answers))
 
     popt, perr, fig = fc.fitting_procedure()
@@ -310,6 +308,19 @@ def test_fitting_procedure(monkeypatch):
     assert abs(abs(popt[1]) - np.pi / 2) < 0.001
     assert fig.axes[0].xaxis.label._text == x_title
     assert fig.axes[0].yaxis.label._text == y_title
+
+
+def test_fitting_procedure_error_raised(monkeypatch):
+    """
+    This function tests the correct behaviour of fc.fitting_procedure() when a wrong input is given.
+    Monkeypatch is used to simulate the input.
+    It will run fc.fitting_procedure() and check if an error is raised when passing a wrong path.
+    """
+    # setting monkeypatch for the inputs
+    wrong_path = "file_does_not_exist.txt"
+    answers = iter([wrong_path])
+    monkeypatch.setattr('builtins.input', lambda _: next(answers))
+
     with pytest.raises(NameError):
         fc.fitting_procedure()
 
@@ -318,20 +329,30 @@ def test_plot_data_verbose(monkeypatch):
     """
     This function tests the correct behaviour of fc.plot_data_verbose().
     Monkeypatch is used to not show the plot window and so not freezing the testing procedure and simulate the inputs.
-    It will run fc.fitting_procedure() two times: the first time to check if the titles are
-    correct; the second time to check if an error is raised when passing a wrong path.
+    It will run fc.fitting_procedure() and check if the titles are correct.
     """
     monkeypatch.setattr(plt, 'show', lambda: None)
 
     path, rows_to_skip, x_index, y_index = "data1.csv", str(0), str(0), str(1)
     x_title, y_title = "a random title", "a second random title"
-    wrong_path = "file_does_not_exist.txt"
-    answers = iter([path, rows_to_skip, x_index, y_index, x_title, y_title, wrong_path])
+    answers = iter([path, rows_to_skip, x_index, y_index, x_title, y_title])
     monkeypatch.setattr('builtins.input', lambda _: next(answers))
 
     fig = fc.plot_data_verbose()
     assert fig.axes[0].xaxis.label._text == x_title
     assert fig.axes[0].yaxis.label._text == y_title
+
+
+def test_plot_data_verbose_error_raised(monkeypatch):
+    """
+    This function tests the correct behaviour of fc.plot_data_verbose() when a wrong input is given.
+    Monkeypatch is used to simulate the inputs.
+    It will run fc.fitting_procedure() and check if an error is raised when passing a wrong path.
+    """
+    wrong_path = "file_does_not_exist.txt"
+    answers = iter([wrong_path])
+    monkeypatch.setattr('builtins.input', lambda _: next(answers))
+
     with pytest.raises(NameError):
         fc.plot_data_verbose()
 
